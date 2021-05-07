@@ -32,7 +32,7 @@ app.post('/users', (request, response) => {
 
   if (userAlreadyExists) {
     return response.status(400).json({
-      error: "User Already exists"
+      error: "User name already exists"
     });
   }
 
@@ -51,7 +51,7 @@ app.post('/users', (request, response) => {
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request;
 
-  return response.json(user.todos)
+  return response.json(user.todos);
 
   // Complete aqui
 });
@@ -76,15 +76,60 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { title, deadline } = request.body;
+  const { id } = request.params
+ 
+  const todo = user.todos.find(todo => todo.id === id)
+
+  if (!todo) {
+    return response.status(404).json({
+      error:"ToDo not found"
+    });
+  }
+
+  todo.title = title;
+  todo.deadline = new Date(deadline);
+
+  // Quando não expecificamos o retorno de status ele gera o padrao 200
+  return response.json(todo);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params;
+
+  const todo = user.todos.find(todo => todo.id === id)
+
+  if (!todo) {
+    return response.status(404).json({
+      error:"ToDo not found"
+    });
+  }
+
+  todo.done =  true;
+
+  return response.json(todo)
+
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params;
+
+  // find Index Retorna a posição no array que objeto esta localizado
+  const todoIndex = user.todos.findIndex(todo => todo.id === id)
+
+  // -1 significa que não foi encontrado é o retorno de findIndex
+  if (todoIndex === -1) {
+    return response.status(404).json({
+      error:"ToDo not found"
+    });
+  }
+
+  // Splice 2 parametros (A partir da posição inicial, quantos deletar)
+  user.todos.splices(todoIndex, 1)
+
 });
 
 module.exports = app;
