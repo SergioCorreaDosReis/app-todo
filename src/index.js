@@ -12,7 +12,7 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
 
-  const user = users.find((user) => user.username === username);
+  const user = users.find(user => user.username === username);
 
   if (!user) {
     return response.status(404).json({
@@ -28,7 +28,7 @@ function checksExistsUserAccount(request, response, next) {
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
 
-  const userAlreadyExists = users.find((user) => user.name === name);
+  const userAlreadyExists = users.find((user) => user.username === username);
 
   if (userAlreadyExists) {
     return response.status(400).json({
@@ -102,9 +102,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const todo = user.todos.find(todo => todo.id === id)
 
   if (!todo) {
-    return response.status(404).json({
-      error:"ToDo not found"
-    });
+    return response.status(404).json({ error:'ToDo not found' });
   }
 
   todo.done =  true;
@@ -117,18 +115,18 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { user } = request;
   const { id } = request.params;
 
-  // find Index Retorna a posição no array que objeto esta localizado
+  // findIndex Retorna a posição no array que objeto esta localizado
   const todoIndex = user.todos.findIndex(todo => todo.id === id)
 
   // -1 significa que não foi encontrado é o retorno de findIndex
   if (todoIndex === -1) {
-    return response.status(404).json({
-      error:"ToDo not found"
-    });
+    return response.status(404).json({ error:'ToDo not found' });
   }
 
   // Splice 2 parametros (A partir da posição inicial, quantos deletar)
-  user.todos.splices(todoIndex, 1)
+  user.todos.splice(todoIndex, 1)
+
+  return response.status(204).send()
 
 });
 
